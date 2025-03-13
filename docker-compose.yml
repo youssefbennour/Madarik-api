@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  madarik-api:
+    build: 
+      context: .
+      dockerfile: ./src/Madarik/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    networks:
+        - madarik-network
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8080
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14.3
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+    networks:
+        - madarik-network
+    volumes:
+      - madarik-sqldata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+volumes:
+  madarik-sqldata:
+      driver: local
+
+networks:
+  madarik-network:
+    driver: bridge

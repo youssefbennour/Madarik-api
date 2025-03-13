@@ -1,0 +1,27 @@
+# 1. Use exceptions for validations
+
+Date: 2024-04-17
+
+## Status
+
+Accepted
+
+## Context
+
+Users worldwide should be able to easily interact with our applications, for this purpose a localization mechanism has to be implemented
+
+We have thought of 2 options:
+
+- Server-side localization
+
+- Client-side localization.
+
+## Decision
+
+After considering our current situation, and since we currently have a shortage of front-end developers, we decided to delegate the process of localization to the back-end.
+
+## Consequences
+
+- Users worldwide will be able to easily interact with our APIs, SPAs...
+
+- We should expect some latency in our API respons times.

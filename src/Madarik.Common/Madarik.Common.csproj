@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Asp.Versioning.Http" Version="8.1.0" />
+        <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
+        <PackageReference Include="Duende.BFF" Version="2.2.0" />
+        <PackageReference Include="FluentValidation" Version="11.11.0" />
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+        <PackageReference Include="Grafana.OpenTelemetry" Version="1.1.0" />
+        <PackageReference Include="InfiniteEnumFlags" Version="0.4.3" />
+        <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
+        <PackageReference Include="MailKit" Version="4.8.0" />
+        <PackageReference Include="MediatR" Version="12.4.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.ApiExplorer" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="MimeKit" Version="4.8.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
+        <PackageReference Include="Npgsql.OpenTelemetry" Version="9.0.2" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
+        <PackageReference Include="OpenTelemetry" Version="1.10.0" />
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.10.0" />
+        <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.8.0-rc.1" />
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.10.0" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.10.0" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.10.0" />
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2" />
+        <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
+        <PackageReference Include="System.Text.Json" Version="9.0.0" />
+
+        <PackageReference Include="Microsoft.IdentityModel.Abstractions" Version="7.4.0" />
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.4.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Logging" Version="7.4.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="7.4.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.4.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.4.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Starter.UnitTests" />
+        <InternalsVisibleTo Include="Starter.IntegrationTests" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    </ItemGroup>
+</Project>
