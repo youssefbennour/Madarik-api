@@ -1,18 +1,27 @@
+using Marten;
+
 namespace Madarik.Madarik.Data.Database;
 
-internal static class DatabaseModule
+public static class DatabaseModule
 {
     private const string ConnectionStringName = "Madarik";
 
-    internal static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString(ConnectionStringName);
+        var connectionString = configuration.GetConnectionString(ConnectionStringName) 
+                               ?? throw new InternalServerException();
+        
         services.AddDbContext<SalamHackPersistence>(options => options.UseNpgsql(connectionString));
+
+        services.AddMarten(options =>
+        {
+            options.Connection(connectionString);
+        }).UseLightweightSessions();
 
         return services;
     }
 
-    internal static IApplicationBuilder UseDatabase(this IApplicationBuilder applicationBuilder)
+    public static IApplicationBuilder UseDatabase(this IApplicationBuilder applicationBuilder)
     {
         applicationBuilder.UseAutomaticMigrations();
 

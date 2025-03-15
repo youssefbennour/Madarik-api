@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Madarik.Madarik.Data.Database;
 
-internal sealed class SalamHackPersistence(DbContextOptions<SalamHackPersistence> options) : IdentityDbContext<User>(options)
+public sealed class SalamHackPersistence(DbContextOptions<SalamHackPersistence> options) : IdentityDbContext<User>(options)
 {
     private const string Schema = "SalamHack";
     

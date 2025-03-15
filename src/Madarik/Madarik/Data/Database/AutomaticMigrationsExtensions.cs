@@ -1,8 +1,8 @@
 namespace Madarik.Madarik.Data.Database;
 
-internal static class AutomaticMigrationsExtensions
+public static class AutomaticMigrationsExtensions
 {
-    internal static IApplicationBuilder UseAutomaticMigrations(this IApplicationBuilder applicationBuilder)
+    public static IApplicationBuilder UseAutomaticMigrations(this IApplicationBuilder applicationBuilder)
     {
         using var scope = applicationBuilder.ApplicationServices.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<SalamHackPersistence>();

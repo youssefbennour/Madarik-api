@@ -1,8 +1,8 @@
 namespace Madarik;
 
-internal static class ApiPaths
+public static class ApiPaths
 {
-    internal const string Root = "api";
+    public const string Root = "api";
 
-    internal const string AuthRoot = "auth";
+    public const string AuthRoot = "auth";
 }

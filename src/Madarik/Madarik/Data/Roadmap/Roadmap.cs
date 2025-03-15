@@ -1,6 +1,6 @@
 namespace Madarik.Madarik.Data.Roadmap;
 
-internal sealed class Roadmap
+public sealed class Roadmap
 {
 #pragma warning disable CS8618, CS9264
     private Roadmap()

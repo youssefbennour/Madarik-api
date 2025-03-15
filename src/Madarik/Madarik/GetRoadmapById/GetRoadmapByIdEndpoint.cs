@@ -2,10 +2,10 @@ using Madarik.Madarik.Data.Database;
 
 namespace Madarik.Madarik.GetRoadmapById;
 
-internal static class GetRoadmapByIdEndpoint
+public static class GetRoadmapByIdEndpoint
 {
 
-    internal static void MapGetRoadmapById(this IEndpointRouteBuilder app) =>
+    public static void MapGetRoadmapById(this IEndpointRouteBuilder app) =>
         app.MapGet(
                 MadarikApiPaths.GetRoadmap,
                 async (

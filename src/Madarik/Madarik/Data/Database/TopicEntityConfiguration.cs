@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Madarik.Madarik.Data.Database;
 
-internal sealed class TopicEntityConfiguration : IEntityTypeConfiguration<Topic.Topic>
+public sealed class TopicEntityConfiguration : IEntityTypeConfiguration<Topic.Topic>
 {
     public void Configure(EntityTypeBuilder<Topic.Topic> builder)
     {

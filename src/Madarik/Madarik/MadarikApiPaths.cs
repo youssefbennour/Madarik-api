@@ -1,10 +1,10 @@
 namespace Madarik.Madarik;
 
-internal static class MadarikApiPaths
+public static class MadarikApiPaths
 {
     private const string ContractsRootApi = $"{ApiPaths.Root}";
 
-    internal const string GenerateRoadmap = $"{ContractsRootApi}/roadmaps";
-    internal const string GetRoadmap = $"{ContractsRootApi}/roadmaps/{{id}}";
-    internal const string GetTopic = $"{ContractsRootApi}/roadmaps/{{roadmapId}}/topics/{{id}}";
+    public const string GenerateRoadmap = $"{ContractsRootApi}/roadmaps";
+    public const string GetRoadmap = $"{ContractsRootApi}/roadmaps/{{id}}";
+    public const string GetTopic = $"{ContractsRootApi}/roadmaps/{{roadmapId}}/topics/{{id}}";
 }

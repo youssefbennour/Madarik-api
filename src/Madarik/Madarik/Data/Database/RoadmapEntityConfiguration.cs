@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Madarik.Madarik.Data.Database;
 
-internal sealed class RoadmapEntityConfiguration : IEntityTypeConfiguration<Roadmap.Roadmap>
+public sealed class RoadmapEntityConfiguration : IEntityTypeConfiguration<Roadmap.Roadmap>
 {
     public void Configure(EntityTypeBuilder<Roadmap.Roadmap> builder)
     {

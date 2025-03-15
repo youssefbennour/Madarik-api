@@ -3,7 +3,7 @@ using Madarik.Madarik.Data.Roadmap;
 
 namespace Madarik.Madarik.GenerateRoadmap;
 
-internal record AiResponse
+public record AiResponse
 {
     [JsonPropertyName("name")]
     public required string Name { get; set; }
@@ -68,7 +68,7 @@ internal record AiResponse
 }
 
 // Move these to a separate file for ReactFlow models
-internal sealed class ReactFlowNode
+public sealed class ReactFlowNode
 {
     [JsonPropertyName("id")]
     public required string Id { get; set; }
@@ -86,7 +86,7 @@ internal sealed class ReactFlowNode
     public NodeStyle? Style { get; set; }
 }
 
-internal sealed class ReactFlowEdge
+public sealed class ReactFlowEdge
 {
     [JsonPropertyName("id")]
     public required string Id { get; set; }
@@ -108,7 +108,7 @@ internal sealed class ReactFlowEdge
 }
 
 // Local model classes for JSON deserialization
-internal class Position
+public class Position
 {
     [JsonPropertyName("x")]
     public required int X { get; set; }
@@ -117,13 +117,13 @@ internal class Position
     public required int Y { get; set; }
 }
 
-internal class NodeData
+public class NodeData
 {
     [JsonPropertyName("label")]
     public required string Label { get; set; }
 }
 
-internal class NodeStyle
+public class NodeStyle
 {
     [JsonPropertyName("backgroundColor")]
     public string? BackgroundColor { get; set; }
@@ -135,7 +135,7 @@ internal class NodeStyle
     public string? Color { get; set; }
 }
 
-internal class EdgeStyle
+public class EdgeStyle
 {
     [JsonPropertyName("stroke")]
     public required string Stroke { get; set; }

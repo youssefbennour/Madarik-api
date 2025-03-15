@@ -1,13 +1,15 @@
 using System.ClientModel;
 using System.Text.Json;
+using Cassandra;
 using Madarik.Madarik.Data.Database;
 using Madarik.Madarik.Data.Roadmap;
+using Marten;
 using OpenAI;
 using OpenAI.Chat;
 
 namespace Madarik.Madarik.GenerateRoadmap;
 
-internal static class GenerateRoadmapEndpoint
+public static class GenerateRoadmapEndpoint
 {
     private const string GroqEndpoint = "https://api.groq.com/openai/v1";
     
@@ -163,12 +165,12 @@ internal static class GenerateRoadmapEndpoint
         }
         """;
 
-    internal static void MapGenerateRoadmap(this IEndpointRouteBuilder app) =>
+    public static void MapGenerateRoadmap(this IEndpointRouteBuilder app) =>
         app.MapPost(
                 MadarikApiPaths.GenerateRoadmap,
                 async (
                   ChatRequest request,
-                  SalamHackPersistence persistence, 
+                  IDocumentSession session, 
                   CancellationToken cancellationtoken) =>
                 {
                     ChatClient client = new(
@@ -203,9 +205,8 @@ internal static class GenerateRoadmapEndpoint
 
                     var flowChart = AiResponse.ToFlowChart(response);
                     var roadmap = new Roadmap(response.Name, response.Description, flowChart);
-                    persistence.Roadmaps.Add(roadmap);
-                    
-                    await persistence.SaveChangesAsync(cancellationtoken);
+                    session.Store(roadmap);
+                    await session.SaveChangesAsync(cancellationtoken);
                     
                     return Results.Ok(roadmap);
                 })
