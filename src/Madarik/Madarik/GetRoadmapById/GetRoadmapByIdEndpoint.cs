@@ -1,4 +1,6 @@
 using Madarik.Madarik.Data.Database;
+using Madarik.Madarik.Data.Roadmap;
+using Marten;
 
 namespace Madarik.Madarik.GetRoadmapById;
 
@@ -10,11 +12,10 @@ public static class GetRoadmapByIdEndpoint
                 MadarikApiPaths.GetRoadmap,
                 async (
                     [FromRoute] Guid id,
-                  SalamHackPersistence persistence, 
+                    IQuerySession querySession,
                   CancellationToken cancellationtoken) =>
                 {
-                    var roadmap = await persistence.Roadmaps
-                        .FirstOrDefaultAsync(m => m.Id ==  id, cancellationtoken);
+                    var roadmap = await querySession.LoadAsync<Roadmap>(id, cancellationtoken);
                     
                     if (roadmap == null)
                     {
