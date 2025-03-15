@@ -9,6 +9,9 @@ using System.Web;
 using Google.Apis.CustomSearchAPI.v1;
 using Google.Apis.Requests;
 using Google.Apis.Services;
+using Madarik.Madarik.Data.Roadmap;
+using Marten;
+using Marten.Internal.Sessions;
 
 namespace Madarik.Madarik.GetTopic;
 
@@ -52,15 +55,21 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                 async (
                     [FromRoute] Guid id,
                     [FromRoute] Guid roadmapId,
+                    IQuerySession querySession,
+                    IDocumentSession documentSession,
                     SalamHackPersistence persistence,
-                    IHttpClientFactory httpClientFactory,
                     CancellationToken cancellationToken) =>
                 {
-                    var roadmap = await persistence.Roadmaps
-                        .FirstOrDefaultAsync(roadmap => roadmap.Id == roadmapId, cancellationToken: cancellationToken);
+                    
+                    var roadmap = await querySession.LoadAsync<Roadmap>(roadmapId, cancellationToken);
                     if (roadmap == null)
                     {
                         return Results.NotFound(); 
+                    }
+
+                    if (roadmap.Topics.FirstOrDefault(topic => topic.Id == id) is { } existingTopic)
+                    {
+                        return Results.Ok(existingTopic);
                     }
 
                     var topicName = roadmap.FlowChart.Nodes
@@ -74,7 +83,7 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                     }
                         
                     ChatClient client = new(
-                        model: "mixtral-8x7b-32768",
+                        model: "gemma2-9b-it",
                         new ApiKeyCredential("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"),
                         new OpenAIClientOptions
                         {
@@ -85,15 +94,15 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                     {
                         new SystemChatMessage(SystemPrompt),
                         new UserChatMessage($"""
-                                             Generate detailed chapters for the topic "{topicName}" which is part of the "{roadmap.Name}" learning roadmap.
-                                             The content should be specifically tailored to fit within the context of {roadmap.Name} while diving deep into {topicName}.
-                                             For each chapter, provide a specific search query that will help find relevant documentation and tutorials.
-                                             Consider:
-                                             - Progressive learning path
-                                             - Clear chapter progression
-                                             - Comprehensive coverage of the topic
-                                             Output as JSON array only.
-                                             """)
+ Generate detailed chapters for the topic "{topicName}" which is part of the "{roadmap.Name}" learning roadmap.
+ The content should be specifically tailored to fit within the context of {roadmap.Name} while diving deep into {topicName}.
+ For each chapter, provide a specific search query that will help find relevant documentation and tutorials.
+ Consider:
+ - Progressive learning path
+ - Clear chapter progression
+ - Comprehensive coverage of the topic
+ Output as JSON array only.
+""")
                     };
 
                     ChatCompletion completion = await client.CompleteChatAsync(messages, new ChatCompletionOptions(), cancellationToken);
@@ -105,8 +114,6 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                     var chaptersWithoutArticles = JsonSerializer.Deserialize<List<ChapterWithSearchQuery>>(aiResponse.Substring(
                         begin, length)) ?? throw new BadRequestException("Unable to generate chapters, please try again with a different topic");
 
-                    using var httpClient = httpClientFactory.CreateClient();
-                    
                     var chapters = new List<Chapter>();
                     var chaptersWithSearchQuery = await FetchArticlesPerChapterAsync(
                         topicName, 
@@ -123,11 +130,10 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                     });
                         
 
-                    var topic = new Topic(topicName, chapters);
-                    persistence.Topics
-                        .Add(topic);
-
-                    await persistence.SaveChangesAsync(cancellationToken);
+                    var topic = new Topic(id, topicName, chapters);
+                    roadmap.Topics.Add(topic);
+                    documentSession.Update(roadmap);
+                    await documentSession.SaveChangesAsync(cancellationToken);
 
                     return Results.Ok(topic);
                 })

@@ -23,7 +23,7 @@ public static class DatabaseModule
 
     public static IApplicationBuilder UseDatabase(this IApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.UseAutomaticMigrations();
+        //applicationBuilder.UseAutomaticMigrations();
 
         return applicationBuilder;
     }

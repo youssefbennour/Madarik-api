@@ -12,8 +12,7 @@ public static class CorsExtensions
          options.AddDefaultPolicy(
             builder =>
             {
-               builder.WithOrigins("https://localhost:3000")
-                  .AllowCredentials()
+               builder.AllowAnyOrigin()
                   .AllowAnyHeader()
                   .AllowAnyMethod();
             });

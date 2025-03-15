@@ -20,5 +20,6 @@ public sealed class Roadmap
     public Guid Id { get; init; }
     public string Name { get; set; }
     public string Description { get; set; }
+    public List<Topic.Topic> Topics { get; set; } = new();
     public FlowChart FlowChart { get; set; }
 }

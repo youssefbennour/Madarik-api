@@ -10,5 +10,6 @@ public class Chapter
     [JsonPropertyName("description")]
     public required string Description { get; set; }
 
-    [JsonPropertyName("articles")] public List<Article> Articles { get; set; } = new();
+    [JsonPropertyName("articles")] 
+    public List<Article> Articles { get; set; } = new();
 } 

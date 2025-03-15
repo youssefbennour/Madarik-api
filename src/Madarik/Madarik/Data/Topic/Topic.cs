@@ -10,9 +10,9 @@ public class Topic
     {
         
     }
-    public Topic(string name, List<Chapter> chapters)
+    public Topic(Guid id, string name, List<Chapter> chapters)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
         Chapters = chapters;
     }
