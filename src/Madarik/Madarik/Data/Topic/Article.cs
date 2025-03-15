@@ -7,9 +7,6 @@ public class Article
     [JsonPropertyName("name")]
     public required string Name { get; set; }
 
-    [JsonPropertyName("estimatedTime")]
-    public required string EstimatedTime { get; set; }
-
     [JsonPropertyName("url")]
     public required string Url { get; set; }
 

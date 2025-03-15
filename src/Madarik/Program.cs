@@ -23,15 +23,6 @@ builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<SalamHackPersistence>()
     .AddApiEndpoints();
 
-// Configure OpenAI client with Groq's API
-#pragma warning disable S125
-/*builder.Services.AddOpenAIService(settings =>
-{
-    settings.ApiKey = "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";
-    settings.BaseDomain = "https://api.groq.com/openai/v1";
-});*/
-#pragma warning restore S125
-
 builder.Services
     .AddApiConfiguration<Program>()
     .AddClock()
