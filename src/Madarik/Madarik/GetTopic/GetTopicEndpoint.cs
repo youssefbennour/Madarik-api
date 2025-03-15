@@ -44,7 +44,7 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
 """;
     
     internal static void MapGetTopic(this IEndpointRouteBuilder app) =>
-        app.MapPost(
+        app.MapGet(
                 MadarikApiPaths.GetTopic,
                 async (
                     [FromRoute] Guid id,
