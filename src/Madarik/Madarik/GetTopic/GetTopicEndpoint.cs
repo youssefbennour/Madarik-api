@@ -22,19 +22,30 @@ internal static class GetTopicEndpoint
         3. For each article, provide:
            - Name: Clear and descriptive title
            - Estimated reading time in minutes
-           - URL: Link to reputable sources (prefer well-known tech blogs, documentation, or educational platforms)
+           - URL: Link to reputable sources with the following priority:
+             1. Official documentation (HIGHEST PRIORITY - if available, this MUST be one of the two articles)
+             2. Well-known tech blogs or educational platforms
              * Must be a valid URL
            - Author: The content creator's name when available
 
         4. Ensure articles are:
            - Limited to maximum 2 per chapter
            - Directly relevant to the chapter's topic
+           - Prioritize official documentation when available
            - From reputable sources
            - Varied in length and depth to accommodate different learning styles
            - Current and up-to-date
            - Aligned with both the specific topic and the broader roadmap context
 
-        5. Output must be a valid JSON array of chapters, following this format:
+        5. Article Selection Strategy:
+           - If official documentation exists for the topic:
+             * First article MUST be the official documentation
+             * Second article should be a practical guide or tutorial
+           - If no official documentation:
+             * Select the two most reputable and comprehensive resources
+             * Aim for complementary content (e.g., one theoretical, one practical)
+
+        6. Output must be a valid JSON array of chapters, following this format:
         [
           {
             "name": "Chapter Name",
@@ -50,7 +61,7 @@ internal static class GetTopicEndpoint
           }
         ]
 
-        6. Include only the JSON output, no additional text
+        7. Include only the JSON output, no additional text
         """;
 
     internal static void MapGetTopic(this IEndpointRouteBuilder app) =>
@@ -80,7 +91,7 @@ internal static class GetTopicEndpoint
                     }
                         
                     ChatClient client = new(
-                        model: "gemma2-9b-it",
+                        model: "mixtral-8x7b-32768",
                         new ApiKeyCredential("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"),
                         new OpenAIClientOptions
                         {
