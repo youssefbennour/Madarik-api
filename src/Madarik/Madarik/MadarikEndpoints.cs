@@ -8,8 +8,14 @@ internal static class MadarikEndpoints
 {
     internal static void MapContracts(this IEndpointRouteBuilder app)
     {
-        app.MapGenerateRoadmap();
-        app.MapGetRoadmapById();
-        app.MapGetTopic();
+        var roadmaps= app.MapGroup(string.Empty)
+            .WithTags("Roadmaps");
+         var topics = app.MapGroup(string.Empty)
+            .WithTags("Topics");
+         
+        roadmaps.MapGenerateRoadmap();
+        roadmaps.MapGetRoadmapById();
+        
+        topics.MapGetTopic();
     }
 }
