@@ -3,17 +3,20 @@ using System;
 using Madarik.Madarik.Data.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Madarik.Contracts.Data.Database.Migrations
+namespace Madarik.Madarik.Data.Database.Migrations
 {
     [DbContext(typeof(SalamHackPersistence))]
-    partial class SalamHackPersistenceModelSnapshot : ModelSnapshot
+    [Migration("20250315010554_ChangeIdToGuid")]
+    partial class ChangeIdToGuid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,23 +43,6 @@ namespace Madarik.Contracts.Data.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roadmap", "SalamHack");
-                });
-
-            modelBuilder.Entity("Madarik.Madarik.Data.Topic.Topic", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasAnnotation("Relational:JsonPropertyName", "id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasAnnotation("Relational:JsonPropertyName", "name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Topic", "SalamHack");
                 });
 
             modelBuilder.Entity("Madarik.Madarik.Data.Users.User", b =>
@@ -458,85 +444,6 @@ namespace Madarik.Contracts.Data.Database.Migrations
 
                     b.Navigation("FlowChart")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Madarik.Madarik.Data.Topic.Topic", b =>
-                {
-                    b.OwnsMany("Madarik.Madarik.Data.Topic.Chapter", "Chapters", b1 =>
-                        {
-                            b1.Property<Guid>("TopicId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<int>("__synthesizedOrdinal")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Description")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasAnnotation("Relational:JsonPropertyName", "description");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasAnnotation("Relational:JsonPropertyName", "name");
-
-                            b1.HasKey("TopicId", "__synthesizedOrdinal");
-
-                            b1.ToTable("Topic", "SalamHack");
-
-                            b1
-                                .ToJson("Chapters")
-                                .HasAnnotation("Relational:JsonPropertyName", "chapters");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TopicId");
-
-                            b1.OwnsMany("Madarik.Madarik.Data.Topic.Article", "Articles", b2 =>
-                                {
-                                    b2.Property<Guid>("ChapterTopicId")
-                                        .HasColumnType("uuid");
-
-                                    b2.Property<int>("Chapter__synthesizedOrdinal")
-                                        .HasColumnType("integer");
-
-                                    b2.Property<int>("__synthesizedOrdinal")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("integer");
-
-                                    b2.Property<string>("Author")
-                                        .HasColumnType("text")
-                                        .HasAnnotation("Relational:JsonPropertyName", "author");
-
-                                    b2.Property<string>("EstimatedTime")
-                                        .IsRequired()
-                                        .HasColumnType("text")
-                                        .HasAnnotation("Relational:JsonPropertyName", "estimatedTime");
-
-                                    b2.Property<string>("Name")
-                                        .IsRequired()
-                                        .HasColumnType("text")
-                                        .HasAnnotation("Relational:JsonPropertyName", "name");
-
-                                    b2.Property<string>("Url")
-                                        .IsRequired()
-                                        .HasColumnType("text")
-                                        .HasAnnotation("Relational:JsonPropertyName", "url");
-
-                                    b2.HasKey("ChapterTopicId", "Chapter__synthesizedOrdinal", "__synthesizedOrdinal");
-
-                                    b2.ToTable("Topic", "SalamHack");
-
-                                    b2.HasAnnotation("Relational:JsonPropertyName", "articles");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("ChapterTopicId", "Chapter__synthesizedOrdinal");
-                                });
-
-                            b1.Navigation("Articles");
-                        });
-
-                    b.Navigation("Chapters");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

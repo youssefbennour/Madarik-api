@@ -2,10 +2,10 @@ using System.Text.Json.Serialization;
 
 namespace Madarik.Madarik.Data.Roadmap;
 
-internal sealed class RoadmapNode
+internal sealed class FlowChartNode
 {
     [JsonPropertyName("id")]
-    public required string Id { get; set; }
+    public required Guid Id { get; set; }
 
     [JsonPropertyName("type")]
     public required string Type { get; set; }

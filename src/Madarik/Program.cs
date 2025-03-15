@@ -8,11 +8,7 @@ using Madarik.Common.ErrorHandling;
 using Madarik.Common.Events.Publisher;
 using Madarik.Common.Localizations;
 using Madarik.Common.Telemetry;
-using Madarik.Contracts;
-using Madarik.Contracts.Data;
-using Madarik.Contracts.Data.Database;
 using Madarik.Madarik;
-using Madarik.Madarik.Data;
 using Madarik.Madarik.Data.Database;
 using Madarik.Madarik.Data.Users;
 

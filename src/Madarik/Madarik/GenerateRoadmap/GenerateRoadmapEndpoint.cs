@@ -1,5 +1,6 @@
 using System.ClientModel;
 using System.Text.Json;
+using Madarik.Madarik.Data.Database;
 using Madarik.Madarik.Data.Roadmap;
 using OpenAI;
 using OpenAI.Chat;
@@ -11,157 +12,164 @@ internal static class GenerateRoadmapEndpoint
     private const string GroqEndpoint = "https://api.groq.com/openai/v1";
     
     private static readonly string SystemPrompt = """
-you are a specialized ai assistant that creates learning roadmaps in reactflow json format. follow these guidelines:
+        You are a specialized AI assistant that creates learning roadmaps in ReactFlow JSON format. Follow these guidelines:
 
-1. generate a structured learning roadmap based on the user's request
-2. output must be valid json that follows reactflow format with these requirements:
-   - each node must have: id, type, position (x, y), data (label), style
-   - each edge must have: id, source, target, type
+        1. Generate a structured learning roadmap based on the user's request
+        2. Output must be valid JSON that follows ReactFlow format with these requirements:
+           - Must include a "name" property at the root level with a descriptive title for the roadmap
+           - Must include a "description" property at the root level with a brief description for the roadmap
+           - Each node must have: id, type, position (x, y), data (label), style
+           - Each edge must have: id, source, target, type
 
-3. node types and positioning:
-   - "maintopic" for core concepts (positioned vertically in the center)
-     * must include style: {
-         backgroundcolor: "#f7fbff",
-         border: "1px solid #3887d9",
-         color: "#3887d9"
-       }
-     * can have multiple subtopic nodes as children
-   - "subtopic" for related concepts:
-     * all subtopics of a maintopic must be positioned on the same side (either all left or all right)
-     * alternate the side between consecutive maintopics (if first maintopic has subtopics on right, next maintopic's subtopics go on left)
-     * when a maintopic has multiple subtopics on the same side:
-        - stack them vertically with 50px spacing
-        - maintain consistent 200px horizontal spacing from maintopic
-   - maintain 150px vertical spacing between consecutive maintopics
+        3. Node types and positioning:
+           - "mainTopic" for core concepts (positioned vertically in the center)
+             * Must include style: {
+                 backgroundColor: "#F7FBFF",
+                 border: "1px solid #3887D9",
+                 color: "#3887D9"
+               }
+             * Can have multiple subTopic nodes as children
+           - "subTopic" for related concepts:
+             * ALL subtopics of a mainTopic MUST be positioned on the SAME side (either all left or all right)
+             * Alternate the side between consecutive mainTopics (if first mainTopic has subtopics on right, next mainTopic's subtopics go on left)
+             * When a mainTopic has multiple subtopics on the same side:
+                - Stack them vertically with 50px spacing
+                - Maintain consistent 200px horizontal spacing from mainTopic
+           - Maintain 150px vertical spacing between consecutive mainTopics
 
-4. edge types and animations:
-   - for maintopic to subtopic connections:
-      * type: "smoothstep"
-      * animated: true
-      * style: { stroke: "#6366f1" }
-   - for prerequisite connections (between main topics):
-      * type: "straight"
-      * animated: false
+        4. Edge types and animations:
+           - For mainTopic to subTopic connections:
+              * type: "smoothstep"
+              * animated: true
+              * style: { stroke: "#6366f1" }
+           - For prerequisite connections (between main topics):
+              * type: "straight"
+              * animated: false
 
-5. position nodes in a logical flow:
-   - main topics flow from top to bottom in the center (x: 500)
-   - all subtopics of a maintopic go on the same side:
-     * right side position: x = 700
-     * left side position: x = 300
-   - alternate sides between consecutive maintopics to prevent overlap
+        5. Position nodes in a logical flow:
+           - Main topics flow from top to bottom in the center (x: 500)
+           - All subtopics of a mainTopic go on the same side:
+             * Right side position: x = 700
+             * Left side position: x = 300
+           - Alternate sides between consecutive mainTopics to prevent overlap
 
-6. include only the json output, no additional text
+        6. Include only the JSON output, no additional text
 
-example format:
-{
-  "nodes": [
-    {
-      "id": "1",
-      "type": "maintopic",
-      "position": { "x": 500, "y": 100 },
-      "data": {
-        "label": "main topic 1"
-      },
-      "style": {
-        "backgroundcolor": "#f7fbff",
-        "border": "1px solid #3887d9",
-        "color": "#3887d9"
-      }
-    },
-    {
-      "id": "2",
-      "type": "subtopic",
-      "position": { "x": 700, "y": 75 },
-      "data": {
-        "label": "subtopic 1.1"
-      }
-    },
-    {
-      "id": "3",
-      "type": "subtopic",
-      "position": { "x": 700, "y": 125 },
-      "data": {
-        "label": "subtopic 1.2"
-      }
-    },
-    {
-      "id": "4",
-      "type": "maintopic",
-      "position": { "x": 500, "y": 250 },
-      "data": {
-        "label": "main topic 2"
-      },
-      "style": {
-        "backgroundcolor": "#f7fbff",
-        "border": "1px solid #3887d9",
-        "color": "#3887d9"
-      }
-    },
-    {
-      "id": "5",
-      "type": "subtopic",
-      "position": { "x": 300, "y": 225 },
-      "data": {
-        "label": "subtopic 2.1"
-      }
-    },
-    {
-      "id": "6",
-      "type": "subtopic",
-      "position": { "x": 300, "y": 275 },
-      "data": {
-        "label": "subtopic 2.2"
-      }
-    }
-  ],
-  "edges": [
-    {
-      "id": "e1-2",
-      "source": "1",
-      "target": "2",
-      "type": "smoothstep",
-      "animated": true,
-      "style": { "stroke": "#6366f1" }
-    },
-    {
-      "id": "e1-3",
-      "source": "1",
-      "target": "3",
-      "type": "smoothstep",
-      "animated": true,
-      "style": { "stroke": "#6366f1" }
-    },
-    {
-      "id": "e4-5",
-      "source": "4",
-      "target": "5",
-      "type": "smoothstep",
-      "animated": true,
-      "style": { "stroke": "#6366f1" }
-    },
-    {
-      "id": "e4-6",
-      "source": "4",
-      "target": "6",
-      "type": "smoothstep",
-      "animated": true,
-      "style": { "stroke": "#6366f1" }
-    },
-    {
-      "id": "e1-4",
-      "source": "1",
-      "target": "4",
-      "type": "straight",
-      "animated": false
-    }
-  ]
-}
-""";
+        Example format:
+        {
+          "name": "State Management in React",
+          "description": "Master modern state management techniques in React applications, from local state to global solutions.",
+          "nodes": [
+            {
+              "id": "1",
+              "type": "mainTopic",
+              "position": { "x": 500, "y": 100 },
+              "data": {
+                "label": "Main Topic 1"
+              },
+              "style": {
+                "backgroundColor": "#F7FBFF",
+                "border": "1px solid #3887D9",
+                "color": "#3887D9"
+              }
+            },
+            {
+              "id": "2",
+              "type": "subTopic",
+              "position": { "x": 700, "y": 75 },
+              "data": {
+                "label": "Subtopic 1.1"
+              }
+            },
+            {
+              "id": "3",
+              "type": "subTopic",
+              "position": { "x": 700, "y": 125 },
+              "data": {
+                "label": "Subtopic 1.2"
+              }
+            },
+            {
+              "id": "4",
+              "type": "mainTopic",
+              "position": { "x": 500, "y": 250 },
+              "data": {
+                "label": "Main Topic 2"
+              },
+              "style": {
+                "backgroundColor": "#F7FBFF",
+                "border": "1px solid #3887D9",
+                "color": "#3887D9"
+              }
+            },
+            {
+              "id": "5",
+              "type": "subTopic",
+              "position": { "x": 300, "y": 225 },
+              "data": {
+                "label": "Subtopic 2.1"
+              }
+            },
+            {
+              "id": "6",
+              "type": "subTopic",
+              "position": { "x": 300, "y": 275 },
+              "data": {
+                "label": "Subtopic 2.2"
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1-2",
+              "source": "1",
+              "target": "2",
+              "type": "smoothstep",
+              "animated": true,
+              "style": { "stroke": "#6366f1" }
+            },
+            {
+              "id": "e1-3",
+              "source": "1",
+              "target": "3",
+              "type": "smoothstep",
+              "animated": true,
+              "style": { "stroke": "#6366f1" }
+            },
+            {
+              "id": "e4-5",
+              "source": "4",
+              "target": "5",
+              "type": "smoothstep",
+              "animated": true,
+              "style": { "stroke": "#6366f1" }
+            },
+            {
+              "id": "e4-6",
+              "source": "4",
+              "target": "6",
+              "type": "smoothstep",
+              "animated": true,
+              "style": { "stroke": "#6366f1" }
+            },
+            {
+              "id": "e1-4",
+              "source": "1",
+              "target": "4",
+              "type": "straight",
+              "animated": false
+            }
+          ]
+        }
+        """;
 
     internal static void MapGenerateRoadmap(this IEndpointRouteBuilder app) =>
         app.MapPost(
                 MadarikApiPaths.GenerateRoadmap,
-                async (ChatRequest request, CancellationToken cancellationtoken) =>
+                async (
+                  ChatRequest request,
+                  SalamHackPersistence persistence, 
+                  CancellationToken cancellationtoken) =>
                 {
                     ChatClient client = new(
                         model: "deepseek-r1-distill-llama-70b", 
@@ -189,11 +197,17 @@ example format:
                         
                     int begin = aiResponse.IndexOf('{');
                     int length = aiResponse.LastIndexOf('}') - begin + 1;
+
+                    var response = JsonSerializer.Deserialize<AiResponse>(aiResponse.Substring(
+                      begin, length)) ?? throw new BadRequestException("Unable to create roadmap, please try again with a different prompt");
+
+                    var flowChart = AiResponse.ToFlowChart(response);
+                    var roadmap = new Roadmap(response.Name, response.Description, flowChart);
+                    persistence.Roadmaps.Add(roadmap);
                     
-                    var response = JsonSerializer.Deserialize<Roadmap>(aiResponse.Substring(
-                      begin, length));
-                        
-                    return Results.Ok(response);
+                    await persistence.SaveChangesAsync(cancellationtoken);
+                    
+                    return Results.Ok(roadmap);
                 })
             .WithOpenApi(operation => new(operation)
             {

@@ -2,15 +2,15 @@ using System.Text.Json.Serialization;
 
 namespace Madarik.Madarik.Data.Roadmap;
 
-internal sealed class RoadmapEdge
+internal sealed class FlowChartEdge
 {
     [JsonPropertyName("id")]
     public required string Id { get; set; }
 
     [JsonPropertyName("source")]
-    public required string Source { get; set; }
+    public required Guid Source { get; set; }
     [JsonPropertyName("target")]
-    public required string Target { get; set; }
+    public required Guid Target { get; set; }
 
     [JsonPropertyName("type")]
     public required string Type { get; set; }

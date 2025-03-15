@@ -3,17 +3,20 @@ using System;
 using Madarik.Madarik.Data.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Madarik.Contracts.Data.Database.Migrations
+namespace Madarik.Madarik.Data.Database.Migrations
 {
     [DbContext(typeof(SalamHackPersistence))]
-    partial class SalamHackPersistenceModelSnapshot : ModelSnapshot
+    [Migration("20250315024711_ChangeTopicSchema")]
+    partial class ChangeTopicSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
