@@ -6,6 +6,9 @@ using OpenAI;
 using OpenAI.Chat;
 using System.ClientModel;
 using System.Web;
+using Google.Apis.CustomSearchAPI.v1;
+using Google.Apis.Requests;
+using Google.Apis.Services;
 
 namespace Madarik.Madarik.GetTopic;
 
@@ -105,20 +108,20 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                     using var httpClient = httpClientFactory.CreateClient();
                     
                     var chapters = new List<Chapter>();
-                    foreach (var chapterWithoutArticles in chaptersWithoutArticles)
+                    var chaptersWithSearchQuery = await FetchArticlesPerChapterAsync(
+                        topicName, 
+                        chaptersWithoutArticles);
+                    
+                    chaptersWithSearchQuery.ForEach(m =>
                     {
-                        var articles = await FetchArticlesForChapter(
-                            $"{topicName} {chapterWithoutArticles.SearchQuery}",
-                            httpClient,
-                            cancellationToken);
-
                         chapters.Add(new Chapter
                         {
-                            Name = chapterWithoutArticles.Name,
-                            Description = chapterWithoutArticles.Description,
-                            Articles = articles
+                            Name = m.Name,
+                            Description = m.Description,
+                            Articles = m.Articles,
                         });
-                    }
+                    });
+                        
 
                     var topic = new Topic(topicName, chapters);
                     persistence.Topics
@@ -138,32 +141,45 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError);
     
-    private static async Task<List<Article>> FetchArticlesForChapter(string searchQuery, HttpClient httpClient, CancellationToken cancellationToken)
+
+    private static async Task<List<ChapterWithSearchQuery>> FetchArticlesPerChapterAsync(string topicName,
+        List<ChapterWithSearchQuery> chapters)
     {
-        var articles = new List<Article>();
+        var service = new CustomSearchAPIService(new BaseClientService.Initializer
+        {
+            ApiKey = GoogleSearchApiKey,
+            ApplicationName = "SalamHack"
+        });
+        
+        var request = new BatchRequest(service);
+        
+        
+        foreach (var chapter in chapters)
+        {
+            var searchRequest = service.Cse.List();
+            searchRequest.Q = $"{topicName} {chapter.SearchQuery}";
+            searchRequest.Cx = GoogleSearchEngineId; 
             
-        var tutorialQuery = $"{searchQuery} tutorial guide";
-        var encodedTutorialQuery = HttpUtility.UrlEncode(tutorialQuery);
-        var tutorialUrl = $"https://www.googleapis.com/customsearch/v1?key={GoogleSearchApiKey}&cx={GoogleSearchEngineId}&q={encodedTutorialQuery}";
-            
-        var tutorialResponse = await httpClient.GetStringAsync(tutorialUrl, cancellationToken);
-        var tutorialResults = JsonSerializer.Deserialize<GoogleSearchResponse>(tutorialResponse);
-            
-        for(int index = 0; index < tutorialResults?.Items?.Count; index++){
-            if(index > 1){
-                break;
-            }
-            var tutorial = tutorialResults.Items[index];
-            articles.Add(new Article
-            {
-                Name = tutorial.Title,
-                Url = tutorial.Link,
-                Author = tutorial.Publisher
-            });
-    
+            request.Queue<Google.Apis.CustomSearchAPI.v1.Data.Search>(
+                searchRequest,
+                (content, error, i, message) =>
+                {
+                    if (content?.Items is null)
+                    {
+                        return;
+                    }
+                    chapter.Articles.AddRange(content.Items.Select(m => new Article
+                    {
+                        Name = m.Title,
+                        Url = m.Link,
+                    }));
+                });
         }
-    
-        return articles;
+        
+        await request.ExecuteAsync();
+
+
+        return chapters;
     }
 }
 
@@ -177,6 +193,8 @@ internal class ChapterWithSearchQuery
 
     [JsonPropertyName("searchQuery")]
     public required string SearchQuery { get; set; }
+
+    [JsonIgnore] public List<Article> Articles { get; set; } = new();
 }
 
 internal class GoogleSearchResponse
