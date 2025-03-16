@@ -2,6 +2,7 @@ using Madarik.Madarik.GenerateRoadmap;
 using Madarik.Madarik.GetRoadmapById;
 using Madarik.Madarik.GetTopic;
 using Madarik.Madarik.GetQuiz;
+using Madarik.Madarik.SubmitQuiz;
 
 namespace Madarik.Madarik;
 
@@ -20,6 +21,8 @@ public static class MadarikEndpoints
         roadmaps.MapGetRoadmapById();
         
         topics.MapGetTopic();
+        
         quizzes.MapGetQuiz();
+        quizzes.MapSubmitQuiz();
     }
 }

@@ -8,4 +8,5 @@ public static class MadarikApiPaths
     public const string GetRoadmap = $"{ContractsRootApi}/roadmaps/{{id}}";
     public const string GetTopic = $"{ContractsRootApi}/roadmaps/{{roadmapId}}/topics/{{id}}";
     public const string GetQuiz = $"{ContractsRootApi}/roadmaps/{{roadmapId}}/topics/{{topicId}}/chapters/{{chapterId}}/quiz";
+    public const string SubmitQuiz = $"{ContractsRootApi}/roadmaps/{{roadmapId}}/topics/{{topicId}}/chapters/{{chapterId}}/quiz/submit";
 }
