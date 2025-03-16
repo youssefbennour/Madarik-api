@@ -6,6 +6,7 @@ using OpenAI;
 using OpenAI.Chat;
 using Marten;
 using System.ClientModel;
+using System.Text.Json.Serialization;
 
 namespace Madarik.Madarik.GetQuiz;
 
@@ -20,7 +21,7 @@ You are a specialized AI assistant that creates educational quizzes. Follow thes
 2. Each question should:
     - Be clear and unambiguous
     - Test understanding of key concepts
-    - Have 2-3 possible answers
+    - Have 2-4 possible answers
     - Include only one correct answer
     - Provide a detailed explanation of why the correct answer is right
 
@@ -78,7 +79,7 @@ You are a specialized AI assistant that creates educational quizzes. Follow thes
 
                     if (chapter.Quiz != null)
                     {
-                        return Results.Ok(chapter.Quiz);
+                        return Results.Ok(QuizResponseDto.ToQuizResponseDto(chapter.Quiz));
                     }
 
                     ChatClient client = new(
@@ -123,7 +124,7 @@ Output as JSON array only.
                     documentSession.Update(roadmap);
                     await documentSession.SaveChangesAsync(cancellationToken);
 
-                    return Results.Ok(quiz);
+                    return Results.Ok(QuizResponseDto.ToQuizResponseDto(quiz));
                 })
             .WithOpenApi(operation => new(operation)
             {
@@ -131,8 +132,53 @@ Output as JSON array only.
                 Description = "This endpoint generates an educational quiz using AI, based on the chapter content and context within the topic and roadmap"
             })
             .AllowAnonymous()
-            .Produces<Quiz>(StatusCodes.Status200OK)
+            .Produces<QuizResponseDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError);
+
+    
+}
+
+public class QuizResponseDto
+{
+    [JsonPropertyName("questions")]
+    public required List<QuizQuestionResponseDto> Questions { get; set; }
+    public static QuizResponseDto ToQuizResponseDto(Quiz quiz)
+    {
+        return new QuizResponseDto
+        {
+            Questions = quiz.Questions.Select(q => new QuizQuestionResponseDto
+            {
+                Id = q.Id,
+                Question = q.Question,
+                PossibleAnswers = q.PossibleAnswers.Select(a => new PossibleAnswerResponseDto
+                {
+                    Id = a.Id,
+                    Answer = a.Answer
+                }).ToList()
+            }).ToList()
+        };
+    }
+}
+
+public class QuizQuestionResponseDto
+{
+    [JsonPropertyName("id")]
+    public required Guid Id { get; set; }
+
+    [JsonPropertyName("question")]
+    public required string Question { get; set; }
+
+    [JsonPropertyName("possibleAnswers")]
+    public required List<PossibleAnswerResponseDto> PossibleAnswers { get; set; }
+}
+
+public class PossibleAnswerResponseDto
+{
+    [JsonPropertyName("id")]
+    public required Guid Id { get; set; }
+
+    [JsonPropertyName("answer")]
+    public required string Answer { get; set; }
 } 

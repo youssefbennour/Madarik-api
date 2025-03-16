@@ -10,6 +10,9 @@ public class Quiz
 
 public class QuizQuestion
 {
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; } = Guid.NewGuid();
+
     [JsonPropertyName("question")]
     public required string Question { get; set; }
 
@@ -22,9 +25,12 @@ public class QuizQuestion
 
 public class PossibleAnswer
 {
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; } = Guid.NewGuid();
+
     [JsonPropertyName("answer")]
     public required string Answer { get; set; }
 
     [JsonPropertyName("isCorrect")]
     public required bool IsCorrect { get; set; }
-} 
+}
