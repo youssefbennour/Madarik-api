@@ -179,6 +179,8 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                         Name = m.Title,
                         Url = m.Link,
                     }));
+
+                    chapter.Articles = chapter.Articles.Take(2).ToList();
                 });
         }
         
