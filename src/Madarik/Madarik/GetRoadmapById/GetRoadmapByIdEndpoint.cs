@@ -13,9 +13,9 @@ public static class GetRoadmapByIdEndpoint
                 async (
                     [FromRoute] Guid id,
                     IQuerySession querySession,
-                  CancellationToken cancellationtoken) =>
+                    CancellationToken cancellationToken) =>
                 {
-                    var roadmap = await querySession.LoadAsync<Roadmap>(id, cancellationtoken);
+                    var roadmap = await querySession.LoadAsync<Roadmap>(id, cancellationToken);
                     
                     if (roadmap == null)
                     {
@@ -26,8 +26,8 @@ public static class GetRoadmapByIdEndpoint
                 })
             .WithOpenApi(operation => new(operation)
             {
-                Summary = "Returns a learning roadmap in ReactFlow JSON format using Groq API",
-                Description = "This endpoint generates structured learning roadmaps based on user queries, formatted as ReactFlow-compatible JSON"
+                Summary = "Returns a learning roadmap",
+                Description = "This endpoint generates structured learning roadmap by Id"
             })
             .AllowAnonymous()
             .Produces<object>(StatusCodes.Status200OK)
