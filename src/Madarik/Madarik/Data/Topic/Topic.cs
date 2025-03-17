@@ -25,4 +25,10 @@ public class Topic
 
     [JsonPropertyName("chapters")]
     public List<Chapter> Chapters { get; set; }
+
+    [JsonPropertyName("quiz")]
+    public Quiz? Quiz { get; set; }
+
+    [JsonPropertyName("quizAnswers")]
+    public TopicQuizAnswers QuizAnswers { get; set; } = new();
 } 

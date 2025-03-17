@@ -3,6 +3,9 @@ using Madarik.Madarik.GetRoadmapById;
 using Madarik.Madarik.GetTopic;
 using Madarik.Madarik.GetQuiz;
 using Madarik.Madarik.SubmitQuiz;
+using Madarik.Madarik.GetTopicQuiz;
+using Madarik.Madarik.SubmitTopicQuiz;
+using Madarik.Madarik.GetTopicQuizResult;
 
 namespace Madarik.Madarik;
 
@@ -23,6 +26,9 @@ public static class MadarikEndpoints
         topics.MapGetTopic();
         
         quizzes.MapGetQuiz();
+        quizzes.MapGetTopicQuiz();
         quizzes.MapSubmitQuiz();
+        quizzes.MapSubmitTopicQuiz();
+        quizzes.MapGetTopicQuizResult();
     }
 }
