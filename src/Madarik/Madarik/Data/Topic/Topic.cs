@@ -23,6 +23,9 @@ public class Topic
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
+    [JsonPropertyName("difficulty")]
+    public required string Difficulty { get; set; }
+
     [JsonPropertyName("chapters")]
     public List<Chapter> Chapters { get; set; }
 

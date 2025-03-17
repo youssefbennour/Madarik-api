@@ -37,14 +37,19 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
     - Comprehensive in coverage
     - Aligned with both the specific topic and the broader roadmap context
 
-4. Output must be a valid JSON array of chapters, following this format:
-[
+4. Output must be a valid JSON object with two fields:
+   - difficulty: The overall difficulty level of the topic (must be one of: "Beginner", "Intermediate", or "Advanced")
+   - chapters: An array of chapters, following this format:
+{
+  "difficulty": "Intermediate",
+  "chapters": [
     {
       "name": "Chapter Name",
       "description": "Detailed chapter description",
       "searchQuery": "specific search query for finding relevant articles"
     }
-]
+  ]
+}
 
 5. Include only the JSON output, no additional text
 """;
@@ -101,23 +106,24 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
  - Progressive learning path
  - Clear chapter progression
  - Comprehensive coverage of the topic
- Output as JSON array only.
+ - Overall difficulty level of the topic
+ Output as JSON object only.
 """)
                     };
 
                     ChatCompletion completion = await client.CompleteChatAsync(messages, new ChatCompletionOptions(), cancellationToken);
                     var aiResponse = completion.Content[0].Text;
 
-                    int begin = aiResponse.IndexOf('[');
-                    int length = aiResponse.LastIndexOf(']') - begin + 1;
+                    int begin = aiResponse.IndexOf('{');
+                    int length = aiResponse.LastIndexOf('}') - begin + 1;
 
-                    var chaptersWithoutArticles = JsonSerializer.Deserialize<List<ChapterWithSearchQuery>>(aiResponse.Substring(
-                        begin, length)) ?? throw new BadRequestException("Unable to generate chapters, please try again with a different topic");
+                    var response = JsonSerializer.Deserialize<TopicGenerationResponse>(aiResponse.Substring(
+                        begin, length)) ?? throw new BadRequestException("Unable to generate topic content, please try again with a different topic");
 
                     var chapters = new List<Chapter>();
                     var chaptersWithSearchQuery = await FetchArticlesPerChapterAsync(
                         topicName, 
-                        chaptersWithoutArticles);
+                        response.Chapters);
                     
                     chaptersWithSearchQuery.ForEach(m =>
                     {
@@ -129,8 +135,10 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                         });
                     });
                         
-
-                    var topic = new Topic(id, topicName, chapters);
+                    var topic = new Topic(id, topicName, chapters)
+                    {
+                        Difficulty = response.Difficulty
+                    };
                     roadmap.Topics.Add(topic);
                     documentSession.Update(roadmap);
                     await documentSession.SaveChangesAsync(cancellationToken);
@@ -189,6 +197,15 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
 
         return chapters;
     }
+}
+
+internal class TopicGenerationResponse
+{
+    [JsonPropertyName("difficulty")]
+    public required string Difficulty { get; set; }
+
+    [JsonPropertyName("chapters")]
+    public required List<ChapterWithSearchQuery> Chapters { get; set; }
 }
 
 internal class ChapterWithSearchQuery
