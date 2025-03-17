@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Madarik.Madarik.Data.Topic;
 
@@ -29,9 +30,15 @@ public class Topic
     [JsonPropertyName("chapters")]
     public List<Chapter> Chapters { get; set; }
 
-    [JsonPropertyName("quiz")]
+    [System.Text.Json.Serialization.JsonIgnore]
     public Quiz? Quiz { get; set; }
 
-    [JsonPropertyName("quizAnswers")]
+    [System.Text.Json.Serialization.JsonIgnore]
+    
     public TopicQuizAnswers QuizAnswers { get; set; } = new();
+    
+    [Newtonsoft.Json.JsonIgnore]
+    public int ChaptersCount => Chapters.Count;
+    
+    
 } 
