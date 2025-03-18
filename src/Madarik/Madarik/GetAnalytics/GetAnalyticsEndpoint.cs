@@ -1,5 +1,5 @@
+using JasperFx.Core;
 using Madarik.Madarik.Data.Roadmap;
-using Madarik.Madarik.GetTopicQuizResult;
 using Madarik.Madarik.Tracking;
 using Marten;
 
@@ -17,36 +17,49 @@ internal static class GetAnalyticsEndpoint
                 {
                     var grain = grainFactory.GetGrain<ITrackingGrain>(Guid.Empty);
                     var topicState = await grain.GetLatestTopicAsync();
+
+                    var roadmaps= querySession.Query<Roadmap>().ToList();
                     
+                    
+                    var response = new RoadmapProgressResponse
+                    {
+                        Streak = 1,
+                        CompletedModules = roadmaps.SelectMany(m => m.Topics).Count(m => m.IsCompleted || Math.Abs(m.Progress - 100) < 0.1),
+                        QuizesTaken = roadmaps.SelectMany(m => m.Topics).SelectMany(m => m.Chapters).Count(m => m.IsCompleted) +
+                                      roadmaps.SelectMany(m => m.Topics).Count(m => m.IsCompleted)
+                    };
+
+
                     if (topicState.RoadmapId is null || topicState.Id is null)
                     {
-                        return Results.NotFound();
+                        return Results.Ok(response);
                     }
-                    
-                    var roadmap = await querySession.LoadAsync<Roadmap>(topicState.RoadmapId, cancellationToken);
-                    if (roadmap is null)
-                    {
-                        return Results.NotFound();
-                    }
-                    
-                    var topic = roadmap.Topics.FirstOrDefault(m => m.Id == topicState.Id);
+                     
+                    var roadmap = roadmaps.FirstOrDefault(m => m.Id == topicState.RoadmapId);
+                     
+                    var topic = roadmap?.Topics.FirstOrDefault(m => m.Id == topicState.Id);
+
                     if (topic is null)
                     {
-                        return Results.NotFound();
+                        return Results.Ok(response);
                     }
                     
-                    return Results.Ok(new
+                    if (topic.IsCompleted || Math.Abs(topic.Progress - 100) < 0.1)
                     {
-                        Id = topic.Id,
-                        Name = topic.Name,
-                        Description = roadmap.Description,
-                        Progress = topic.Progress,
-                        Streak = 1,
-                        CompletedModules = roadmap.Topics.Count(m => m.IsCompleted || Math.Abs(m.Progress - 100) < 0.1),
-                        QuizesTaken = roadmap.Topics.SelectMany(m => m.Chapters).Count(m => m.IsCompleted) +
-                                      roadmap.Topics.Count(m => m.IsCompleted)
-                        
-                    });
+                        var tempTopic = roadmap.Topics.FirstOrDefault(m => m is { IsCompleted: false, Progress: < 100 });
+                        if (tempTopic is not null)
+                        {
+                            topic = tempTopic;
+                        }
+                    }
+
+                    response.Topic ??= new();
+                    response.Topic.Id = topic.Id;
+                    response.Topic.Name = topic.Name;
+                    response.Topic.Description = roadmap.Description ?? string.Empty;
+                    response.Topic.Progress = topic.Progress;
+                    
+                    return Results.Ok(response);
                 })
             .WithOpenApi(operation => new(operation)
             {
@@ -54,6 +67,21 @@ internal static class GetAnalyticsEndpoint
                 Description = "Gives the last accessed chapter by the user"
             })
             .AllowAnonymous()
-            .Produces<TopicQuizResultResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
 } 
+
+public class RoadmapProgressResponse
+{
+    public TopicResponse? Topic { get; set; }
+    public int Streak { get; set; }
+    public int CompletedModules { get; set; }
+    public int QuizesTaken { get; set; }
+}
+
+public class TopicResponse
+{
+    public Guid Id { get; set; } // Assuming Id is a Guid, adjust if needed
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public double Progress { get; set; }
+}
