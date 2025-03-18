@@ -3,17 +3,25 @@ using Madarik.Madarik.Data.Roadmap;
 
 namespace Madarik.Madarik.GenerateRoadmap;
 
-public record AiResponse
+public class AiResponse
 {
     [JsonPropertyName("name")]
     public required string Name { get; set; }
+
     [JsonPropertyName("description")]
     public required string Description { get; set; }
+
+    [JsonPropertyName("difficulty")]
+    public required string Difficulty { get; set; }
+
+    [JsonPropertyName("estimatedTime")]
+    public required string EstimatedTime { get; set; }
+
     [JsonPropertyName("nodes")]
-    public required List<ReactFlowNode> Nodes { get; set; } 
+    public required List<Node> Nodes { get; set; }
 
     [JsonPropertyName("edges")]
-    public required List<ReactFlowEdge> Edges { get; set; }
+    public required List<Edge> Edges { get; set; }
 
     public static FlowChart ToFlowChart(AiResponse response)
     {
@@ -67,8 +75,7 @@ public record AiResponse
     }
 }
 
-// Move these to a separate file for ReactFlow models
-public sealed class ReactFlowNode
+public class Node
 {
     [JsonPropertyName("id")]
     public required string Id { get; set; }
@@ -86,14 +93,14 @@ public sealed class ReactFlowNode
     public NodeStyle? Style { get; set; }
 }
 
-public sealed class ReactFlowEdge
+public class Edge
 {
     [JsonPropertyName("id")]
     public required string Id { get; set; }
 
     [JsonPropertyName("source")]
     public required string Source { get; set; }
-    
+
     [JsonPropertyName("target")]
     public required string Target { get; set; }
 
@@ -107,7 +114,6 @@ public sealed class ReactFlowEdge
     public EdgeStyle? Style { get; set; }
 }
 
-// Local model classes for JSON deserialization
 public class Position
 {
     [JsonPropertyName("x")]
@@ -138,5 +144,5 @@ public class NodeStyle
 public class EdgeStyle
 {
     [JsonPropertyName("stroke")]
-    public required string Stroke { get; set; }
+    public string? Stroke { get; set; }
 }

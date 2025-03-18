@@ -30,14 +30,14 @@ internal static class GetAnalyticsEndpoint
                     };
 
 
-                    if (topicState.RoadmapId is null || topicState.Id is null)
+                    if (topicState.RoadmapId is null || topicState.TopicId is null)
                     {
                         return Results.Ok(response);
                     }
                      
                     var roadmap = roadmaps.FirstOrDefault(m => m.Id == topicState.RoadmapId);
                      
-                    var topic = roadmap?.Topics.FirstOrDefault(m => m.Id == topicState.Id);
+                    var topic = roadmap?.Topics.FirstOrDefault(m => m.Id == topicState.TopicId);
 
                     if (topic is null)
                     {

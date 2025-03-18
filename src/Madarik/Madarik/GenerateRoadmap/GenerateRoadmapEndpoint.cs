@@ -20,6 +20,8 @@ public static class GenerateRoadmapEndpoint
         2. Output must be valid JSON that follows ReactFlow format with these requirements:
            - Must include a "name" property at the root level with a descriptive title for the roadmap
            - Must include a "description" property at the root level with a brief description for the roadmap
+           - Must include a "difficulty" property at the root level (must be one of: "Beginner", "Intermediate", "Advanced", "Beginner to Intermediate", "Intermediate to Advanced")
+           - Must include an "estimatedTime" property at the root level (e.g., "2-3 weeks", "1-2 months", "3-6 months")
            - Each node must have: id, type, position (x, y), data (label), style
            - Each edge must have: id, source, target, type
 
@@ -61,6 +63,8 @@ public static class GenerateRoadmapEndpoint
         {
           "name": "State Management in React",
           "description": "Master modern state management techniques in React applications, from local state to global solutions.",
+          "difficulty": "Intermediate to Advanced",
+          "estimatedTime": "2-3 weeks",
           "nodes": [
             {
               "id": "1",
@@ -190,6 +194,8 @@ public static class GenerateRoadmapEndpoint
                                              - Core topics and their related subtopics
                                              - Logical progression of topics
                                              - Clear relationships between topics
+                                             - Appropriate difficulty level based on the content
+                                             - Realistic time estimate for completion
                                              Output as ReactFlow JSON only.
                                              """)
                     };
@@ -204,7 +210,12 @@ public static class GenerateRoadmapEndpoint
                       begin, length)) ?? throw new BadRequestException("Unable to create roadmap, please try again with a different prompt");
 
                     var flowChart = AiResponse.ToFlowChart(response);
-                    var roadmap = new Roadmap(response.Name, response.Description, flowChart);
+                    var roadmap = new Roadmap(
+                        response.Name, 
+                        response.Description, 
+                        flowChart,
+                        response.Difficulty,
+                        response.EstimatedTime);
                     session.Store(roadmap);
                     await session.SaveChangesAsync(cancellationtoken);
                     
