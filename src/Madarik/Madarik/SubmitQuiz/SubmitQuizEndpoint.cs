@@ -17,6 +17,7 @@ internal static class SubmitQuizEndpoint
                     [FromRoute] Guid chapterId,
                     [FromBody] List<QuizAnswerSubmission> answers,
                     IQuerySession querySession,
+                    IDocumentSession documentSession,
                     CancellationToken cancellationToken) =>
                 {
                     var roadmap = await querySession.LoadAsync<Roadmap>(roadmapId, cancellationToken);
@@ -102,7 +103,7 @@ internal static class SubmitQuizEndpoint
                             });
                         }
                     }
-
+                    
                     var response = new QuizSubmissionResponse
                     {
                         NumberOfQuestions = quiz.Questions.Count,
@@ -110,6 +111,9 @@ internal static class SubmitQuizEndpoint
                         Submission = submission
                     };
 
+                    chapter.IsCompleted = true;
+                    documentSession.Update(roadmap);
+                    await  documentSession.SaveChangesAsync(cancellationToken);
                     return Results.Ok(response);
                 })
             .WithOpenApi(operation => new(operation)

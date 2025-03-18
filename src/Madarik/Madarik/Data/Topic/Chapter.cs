@@ -15,6 +15,9 @@ public class Chapter
 
     [JsonPropertyName("articles")] 
     public List<Article> Articles { get; set; } = new();
+    
+    [JsonPropertyName("isCompleted")] 
+    public bool IsCompleted { get; set; }
 
     [JsonPropertyName("quiz")]
     public Quiz? Quiz { get; set; }
