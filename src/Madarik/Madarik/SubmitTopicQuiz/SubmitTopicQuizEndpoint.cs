@@ -48,18 +48,15 @@ internal static class SubmitTopicQuizEndpoint
                         return Results.BadRequest("Invalid answer ID");
                     }
 
-                    // Check if this question was already answered
                     var existingAnswer = topic.QuizAnswers.Answers.FirstOrDefault(a => a.QuestionId == submission.QuestionId);
                     if (existingAnswer != null)
                     {
-                        // Update existing answer
                         existingAnswer.AnswerId = submission.AnswerId;
                         existingAnswer.IsCorrect = selectedAnswer.IsCorrect;
                         existingAnswer.SubmittedAt = DateTimeOffset.UtcNow;
                     }
                     else
                     {
-                        // Add new answer
                         topic.QuizAnswers.Answers.Add(new TopicQuizAnswer
                         {
                             QuestionId = submission.QuestionId,
@@ -69,6 +66,11 @@ internal static class SubmitTopicQuizEndpoint
                         });
                     }
 
+                    if (topic.QuizAnswers.Answers.Count == topic.Quiz.Questions.Count)
+                    {
+                        topic.IsCompleted = true;
+                    }
+                    
                     documentSession.Update(roadmap);
                     await documentSession.SaveChangesAsync(cancellationToken);
 
