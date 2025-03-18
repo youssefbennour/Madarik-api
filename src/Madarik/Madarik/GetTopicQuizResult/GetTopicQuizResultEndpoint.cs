@@ -1,4 +1,5 @@
 using Madarik.Madarik.Data.Roadmap;
+using Madarik.Madarik.Tracking;
 using Microsoft.AspNetCore.Mvc;
 using Marten;
 
@@ -13,6 +14,7 @@ internal static class GetTopicQuizResultEndpoint
                     [FromRoute] Guid roadmapId,
                     [FromRoute] Guid topicId,
                     IQuerySession querySession,
+                    IGrainFactory grainFactory,
                     CancellationToken cancellationToken) =>
                 {
                     var roadmap = await querySession.LoadAsync<Roadmap>(roadmapId, cancellationToken);
@@ -26,6 +28,9 @@ internal static class GetTopicQuizResultEndpoint
                     {
                         return Results.NotFound();
                     }
+                    
+                    var grain = grainFactory.GetGrain<ITrackingGrain>(Guid.Empty);
+                    await grain.UpdateLatestTopicAsync(roadmapId, topicId);
 
                     if (topic.Quiz == null)
                     {

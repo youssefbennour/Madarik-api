@@ -29,6 +29,14 @@ builder.Services
     .AddRequestBasedLocalization()
     .AddPublisher(Assembly.GetExecutingAssembly());
 
+
+builder.UseOrleans((silo) =>
+{
+    silo.UseLocalhostClustering();
+    silo.AddMemoryGrainStorage("VolumesStorage");
+});
+
+
 builder.Services
     .AddContracts(builder.Configuration);
 

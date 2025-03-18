@@ -3,6 +3,7 @@ using Madarik.Madarik.Data.Topic;
 using Microsoft.AspNetCore.Mvc;
 using Marten;
 using System.ClientModel;
+using Madarik.Madarik.Tracking;
 
 namespace Madarik.Madarik.SubmitQuiz;
 
@@ -18,6 +19,7 @@ internal static class SubmitQuizEndpoint
                     [FromBody] List<QuizAnswerSubmission> answers,
                     IQuerySession querySession,
                     IDocumentSession documentSession,
+                    IGrainFactory grainFactory,
                     CancellationToken cancellationToken) =>
                 {
                     var roadmap = await querySession.LoadAsync<Roadmap>(roadmapId, cancellationToken);
@@ -43,6 +45,9 @@ internal static class SubmitQuizEndpoint
                         return Results.NotFound("No quiz found for this chapter");
                     }
 
+                    var grain = grainFactory.GetGrain<ITrackingGrain>(Guid.Empty);
+                    await grain.UpdateLatestTopicAsync(roadmapId, topicId);
+                    
                     var quiz = chapter.Quiz;
                     var submission = new List<QuizAnswerResult>();
                     var validAnswers = 0;

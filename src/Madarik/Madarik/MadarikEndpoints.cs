@@ -1,4 +1,5 @@
 using Madarik.Madarik.GenerateRoadmap;
+using Madarik.Madarik.GetAnalytics;
 using Madarik.Madarik.GetRoadmapById;
 using Madarik.Madarik.GetTopic;
 using Madarik.Madarik.GetQuiz;
@@ -6,6 +7,7 @@ using Madarik.Madarik.SubmitQuiz;
 using Madarik.Madarik.GetTopicQuiz;
 using Madarik.Madarik.SubmitTopicQuiz;
 using Madarik.Madarik.GetTopicQuizResult;
+using Madarik.Madarik.Tracking;
 
 namespace Madarik.Madarik;
 
@@ -24,6 +26,7 @@ public static class MadarikEndpoints
         roadmaps.MapGetRoadmapById();
         
         topics.MapGetTopic();
+        topics.MapGetAnalyticsEndpoint();
         
         quizzes.MapGetQuiz();
         quizzes.MapGetTopicQuiz();

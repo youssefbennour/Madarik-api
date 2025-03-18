@@ -12,4 +12,5 @@ public static class MadarikApiPaths
     public const string GetTopicQuizResult = $"{ContractsRootApi}/roadmaps/{{roadmapId}}/topics/{{topicId}}/quiz/result";
     public const string SubmitQuiz = $"{ContractsRootApi}/roadmaps/{{roadmapId}}/topics/{{topicId}}/chapters/{{chapterId}}/quiz/submit";
     public const string SubmitTopicQuiz = $"{ContractsRootApi}/roadmaps/{{roadmapId}}/topics/{{topicId}}/quiz/submit";
+    public const string GetAnalytics = $"{ContractsRootApi}/analytics";
 }

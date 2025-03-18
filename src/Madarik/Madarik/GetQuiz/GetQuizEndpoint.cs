@@ -7,6 +7,7 @@ using OpenAI.Chat;
 using Marten;
 using System.ClientModel;
 using System.Text.Json.Serialization;
+using Madarik.Madarik.Tracking;
 
 namespace Madarik.Madarik.GetQuiz;
 
@@ -57,6 +58,7 @@ You are a specialized AI assistant that creates educational quizzes. Follow thes
                     [FromRoute] Guid chapterId,
                     IQuerySession querySession,
                     IDocumentSession documentSession,
+                    IGrainFactory grainFactory,
                     CancellationToken cancellationToken) =>
                 {
                     var roadmap = await querySession.LoadAsync<Roadmap>(roadmapId, cancellationToken);
@@ -76,6 +78,9 @@ You are a specialized AI assistant that creates educational quizzes. Follow thes
                     {
                         return Results.NotFound();
                     }
+                    
+                    var grain = grainFactory.GetGrain<ITrackingGrain>(Guid.Empty);
+                    await grain.UpdateLatestTopicAsync(roadmapId, topicId);
 
                     if (chapter.Quiz != null)
                     {

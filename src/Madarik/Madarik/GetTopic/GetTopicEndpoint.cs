@@ -10,6 +10,7 @@ using Google.Apis.CustomSearchAPI.v1;
 using Google.Apis.Requests;
 using Google.Apis.Services;
 using Madarik.Madarik.Data.Roadmap;
+using Madarik.Madarik.Tracking;
 using Marten;
 using Marten.Internal.Sessions;
 
@@ -62,7 +63,7 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                     [FromRoute] Guid roadmapId,
                     IQuerySession querySession,
                     IDocumentSession documentSession,
-                    SalamHackPersistence persistence,
+                    IGrainFactory grainFactory,
                     CancellationToken cancellationToken) =>
                 {
                     
@@ -74,6 +75,7 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
 
                     if (roadmap.Topics.FirstOrDefault(topic => topic.Id == id) is { } existingTopic)
                     {
+                        await grainFactory.GetGrain<ITrackingGrain>(Guid.Empty).UpdateLatestTopicAsync(roadmapId, id);
                         return Results.Ok(existingTopic);
                     }
 
@@ -134,6 +136,8 @@ You are a specialized AI assistant that creates detailed course chapters. Follow
                             Articles = m.Articles,
                         });
                     });
+                    
+                    await grainFactory.GetGrain<ITrackingGrain>(Guid.Empty).UpdateLatestTopicAsync(roadmapId, id);
                         
                     var topic = new Topic(id, topicName, chapters)
                     {
