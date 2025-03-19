@@ -1,3 +1,4 @@
+using Madarik.Madarik.DeleteRoadmap;
 using Madarik.Madarik.GenerateRoadmap;
 using Madarik.Madarik.GetAnalytics;
 using Madarik.Madarik.GetRoadmapById;
@@ -26,6 +27,7 @@ public static class MadarikEndpoints
         roadmaps.MapGenerateRoadmap();
         roadmaps.MapGetRoadmaps();
         roadmaps.MapGetRoadmapById();
+        roadmaps.MapDeleteRoadmap();
         
         topics.MapGetTopic();
         topics.MapGetAnalyticsEndpoint();

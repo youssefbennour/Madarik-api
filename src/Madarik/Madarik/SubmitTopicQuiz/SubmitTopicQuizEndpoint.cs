@@ -74,7 +74,7 @@ internal static class SubmitTopicQuizEndpoint
                     var score = topic.Quiz.Questions.Count > 0 ? topic.QuizAnswers.Answers.Count(m => m.IsCorrect) 
                         / topic.Quiz.Questions.Count * 100 : 100;
                     
-                    if (score >= 50)
+                    if (score >= 80)
                     {
                         topic.IsCompleted = true;
                     }
