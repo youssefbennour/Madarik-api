@@ -12,4 +12,7 @@ public class TopicQuizResultResponse
 
     [JsonPropertyName("score")]
     public required double Score { get; set; }
+    
+    [JsonPropertyName("hasPassed")]
+    public required bool HasPassed { get; set; }
 } 

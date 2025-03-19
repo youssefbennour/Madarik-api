@@ -49,6 +49,7 @@ internal static class GetTopicQuizResultEndpoint
                     {
                         NumberOfQuestions = totalQuestions,
                         NumberOfCorrectAnswers = correctAnswers,
+                        HasPassed = score > 50,
                         Score = Math.Round(score, 2)
                     };
 
