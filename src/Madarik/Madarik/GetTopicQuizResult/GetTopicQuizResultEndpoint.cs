@@ -49,7 +49,7 @@ internal static class GetTopicQuizResultEndpoint
                     {
                         NumberOfQuestions = totalQuestions,
                         NumberOfCorrectAnswers = correctAnswers,
-                        Score = Math.Round(score, 2) // Round to 2 decimal places
+                        Score = Math.Round(score, 2)
                     };
 
                     return Results.Ok(response);

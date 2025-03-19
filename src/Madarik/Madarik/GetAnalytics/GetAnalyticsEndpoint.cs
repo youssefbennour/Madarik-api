@@ -44,15 +44,6 @@ internal static class GetAnalyticsEndpoint
                         return Results.Ok(response);
                     }
                     
-                    if (topic.IsCompleted || Math.Abs(topic.Progress - 100) < 0.1)
-                    {
-                        var tempTopic = roadmap.Topics.FirstOrDefault(m => m is { IsCompleted: false, Progress: < 100 });
-                        if (tempTopic is not null)
-                        {
-                            topic = tempTopic;
-                        }
-                    }
-
                     response.Topic ??= new();
                     response.Topic.Id = topic.Id;
                     response.Topic.RoadmapId = roadmap.Id;

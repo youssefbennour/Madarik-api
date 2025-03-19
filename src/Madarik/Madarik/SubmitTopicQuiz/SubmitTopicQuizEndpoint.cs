@@ -71,7 +71,10 @@ internal static class SubmitTopicQuizEndpoint
                         });
                     }
 
-                    if (topic.QuizAnswers.Answers.Count == topic.Quiz.Questions.Count)
+                    var score = topic.Quiz.Questions.Count > 0 ? topic.QuizAnswers.Answers.Count(m => m.IsCorrect) 
+                        / topic.Quiz.Questions.Count * 100 : 100;
+                    
+                    if (score >= 50)
                     {
                         topic.IsCompleted = true;
                     }

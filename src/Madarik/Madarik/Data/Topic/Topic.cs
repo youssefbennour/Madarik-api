@@ -41,7 +41,7 @@ public class Topic
 
     [Newtonsoft.Json.JsonIgnore]
 #pragma warning disable S3358
-    public double Progress => IsCompleted ? 100 :  Chapters.Count(m => m.IsCompleted) * 100 / Chapters.Count;
+    public double Progress => IsCompleted ? 100 :  Chapters.Count(m => m.IsCompleted) * 100 / (Chapters.Count+1);
 #pragma warning restore S3358
     [Newtonsoft.Json.JsonIgnore]
     public int ChaptersCount => Chapters.Count;
