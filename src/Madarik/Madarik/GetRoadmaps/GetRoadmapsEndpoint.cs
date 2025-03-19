@@ -21,6 +21,8 @@ internal static class GetRoadmapsEndpoint
                     {
                         Id = roadmap.Id,
                         Name = roadmap.Name,
+                        EstimatedTime = roadmap.EstimatedTime,
+                        Difficutly = roadmap.Difficulty,
                         Description = roadmap.Description,
                         NumberOfTopics = roadmap.Topics.Count
                     });
@@ -39,6 +41,8 @@ internal static class GetRoadmapsEndpoint
 public class RoadmapListItemResponse
 {
     public Guid Id { get; set; }
+    public string Difficutly { get; set; } = string.Empty;
+    public string EstimatedTime { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int NumberOfTopics { get; set; }

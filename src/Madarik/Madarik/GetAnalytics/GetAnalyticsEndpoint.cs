@@ -39,7 +39,7 @@ internal static class GetAnalyticsEndpoint
                      
                     var topic = roadmap?.Topics.FirstOrDefault(m => m.Id == topicState.TopicId);
 
-                    if (topic is null)
+                    if (roadmap is null || topic is null)
                     {
                         return Results.Ok(response);
                     }
@@ -55,6 +55,7 @@ internal static class GetAnalyticsEndpoint
 
                     response.Topic ??= new();
                     response.Topic.Id = topic.Id;
+                    response.Topic.RoadmapId = roadmap.Id;
                     response.Topic.Name = topic.Name;
                     response.Topic.Description = roadmap.Description ?? string.Empty;
                     response.Topic.Progress = topic.Progress;
@@ -80,7 +81,8 @@ public class RoadmapProgressResponse
 
 public class TopicResponse
 {
-    public Guid Id { get; set; } // Assuming Id is a Guid, adjust if needed
+    public Guid Id { get; set; }
+    public Guid RoadmapId { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public double Progress { get; set; }
