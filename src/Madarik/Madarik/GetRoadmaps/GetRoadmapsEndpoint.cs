@@ -24,7 +24,7 @@ internal static class GetRoadmapsEndpoint
                         EstimatedTime = roadmap.EstimatedTime,
                         Difficutly = roadmap.Difficulty,
                         Description = roadmap.Description,
-                        NumberOfTopics = roadmap.Topics.Count
+                        NumberOfTopics = roadmap.FlowChart.Nodes.Count
                     });
 
                     return Results.Ok(response);
